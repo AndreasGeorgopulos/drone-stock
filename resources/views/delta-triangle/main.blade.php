@@ -1,6 +1,6 @@
 @extends('delta-triangle.index')
 @section('content')
 
-    <div>DELTA TRIANGLE</div>
+    <div class="text-center" style="font-size: 30px;">DELTA TRIANGLE</div>
 
 @endsection
