@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Domains\DeltaTriangle;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -8,6 +8,6 @@ use App\Http\Controllers\Controller;
 class IndexController extends Controller
 {
     public function index () {
-        return view('admin.index');
+        return view('delta-triangle.main');
     }
 }
