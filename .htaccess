@@ -1,0 +1,20 @@
+RewriteEngine on
+RewriteCond %{HTTP_HOST} ^delta-triangle.hu$ [NC,OR]
+RewriteCond %{HTTP_HOST} ^www.delta-triangle.hu$
+RewriteCond %{REQUEST_URI} !public/
+RewriteRule (.*) /public/$1 [L]
+
+RewriteCond %{HTTP_HOST} ^delta-triangle.com$ [NC,OR]
+RewriteCond %{HTTP_HOST} ^www.delta-triangle.com$
+RewriteCond %{REQUEST_URI} !public/
+RewriteRule (.*) /public/$1 [L]
+
+RewriteCond %{HTTP_HOST} ^drone-stock.hu$ [NC,OR]
+RewriteCond %{HTTP_HOST} ^www.drone-stock.hu$
+RewriteCond %{REQUEST_URI} !public/
+RewriteRule (.*) /public/$1 [L]
+
+RewriteCond %{HTTP_HOST} ^drone-stock.com$ [NC,OR]
+RewriteCond %{HTTP_HOST} ^www.drone-stock.com$
+RewriteCond %{REQUEST_URI} !public/
+RewriteRule (.*) /public/$1 [L]
