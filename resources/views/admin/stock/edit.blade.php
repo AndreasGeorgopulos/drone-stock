@@ -36,7 +36,7 @@
     </form>
 @endsection
 
-@section('adminlte_js')
+@section('js')
     <script type="text/javascript">
         $('textarea.wysig').wysihtml5();
 
