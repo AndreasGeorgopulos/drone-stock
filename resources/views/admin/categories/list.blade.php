@@ -7,9 +7,9 @@
                     <thead>
                     <tr role="row">
                         <th class="@if($sort == 'id') sorting_{{$direction}} @else sorting @endif" data-column="id">#</th>
-                        <th class="@if($sort == 'title') sorting_{{$direction}} @else sorting @endif" data-column="key">{{trans('admin.Cím')}}</th>
+                        <th class="@if($sort == 'name') sorting_{{$direction}} @else sorting @endif" data-column="name">{{trans('admin.Név')}}</th>
                         <th>
-                            <a href="{{url(route('admin_contents_edit'))}}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-plus"></i> {{trans('admin.Új tartalom')}}</a>
+                            <a href="{{url(route('admin_categories_edit'))}}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-plus"></i> {{trans('admin.Új kategória')}}</a>
                         </th>
                     </tr>
                     </thead>
@@ -27,9 +27,9 @@
                                         <span class="sr-only">Toggle Dropdown</span>
                                     </button>
                                     <ul class="dropdown-menu" role="menu">
-                                        <li><a href="{{url(route('admin_contents_edit', ['id' => $model->id]))}}"><i class="fa fa-edit"></i> {{trans('admin.Szerkesztés')}}</a></li>
+                                        <li><a href="{{url(route('admin_categories_edit', ['id' => $model->id]))}}"><i class="fa fa-edit"></i> {{trans('admin.Szerkesztés')}}</a></li>
                                         <li class="divider"></li>
-                                        <li><a href="{{url(route('admin_contents_delete', ['id' => $model->id]))}}" class="confirm"><i class="fa fa-trash"></i> {{trans('admin.Törlés')}}</a></li>
+                                        <li><a href="{{url(route('admin_categories_delete', ['id' => $model->id]))}}" class="confirm"><i class="fa fa-trash"></i> {{trans('admin.Törlés')}}</a></li>
                                     </ul>
                                 </div>
 

@@ -1,12 +1,18 @@
 @if (is_array($item))
-	<?php
-	$can = true;
-	if (isset($item['role']) && !Auth::user()->roles()->where('key', $item['role'])->first()) {
-		if (!Auth::user()->roles()->where('key', 'superadmin')->first()) {
-			$can = false;
-		}
-	}
-	?>
+    @php
+        $can = true;
+        if (isset($item['roles']) && is_array($item['roles']) && !Auth::user()->roles()->where('key', 'superadmin')->first()) {
+            $query = Auth::user()->roles();
+            foreach ($item['roles'] as $index => $role) {
+                if (!$index) $query = $query->where('key', $role);
+                else $query = $query->orWhere('key', $role);
+            }
+            if (!$query->count()) {
+                $can = false;
+            }
+        }
+    @endphp
+
     @if ($can)
         <li class="{{ $item['top_nav_class'] }}">
             <a href="{{ !empty($item['route']) ? url(route($item['route'])) : '#' }}"

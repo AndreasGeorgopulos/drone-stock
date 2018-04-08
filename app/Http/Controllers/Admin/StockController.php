@@ -2,18 +2,22 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Category;
+use App\LqOption;
 use App\Stock;
 use App\Stock_Size;
 use App\Stock_Translate;
+use App\Traits\TIndexImage;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Pawlox\VideoThumbnail\Facade\VideoThumbnail;
 
 class StockController extends Controller
 {
+	use TIndexImage;
+	
     public function index (Request $request) {
 		if ($request->isMethod('post')) {
 			$length = $request->get('length', config('adminlte.paginator.default_length'));
@@ -43,6 +47,15 @@ class StockController extends Controller
 	}
 	
 	public function edit (Request $request, $id = 0) {
+		$image_sizes = LqOption::where('lq_key', 'like', 'stock_image_size_%')->get();
+		$settings = [
+			['title' => trans('admin.Index képek elérési útvonala'), 'value' => lqOption('stock_image_path', 'uploads/stocks')],
+			['title' => trans('admin.Eredeti képek elérési útvonala'), 'value' => lqOption('stock_image_original_path', 'uploads/stocks/original')],
+			['title' => trans('admin.Feltöltött képek méretezése'), 'value' => collect($image_sizes)->implode('lq_value',	', ')],
+			['title' => 'upload_max_filesize', 'value' => ini_get('upload_max_filesize')],
+			['title' => 'post_max_size', 'value' => ini_get('post_max_size')],
+		];
+		
 		$model = Stock::findOrNew($id);
 		
 		if ($request->isMethod('post')) {
@@ -50,12 +63,14 @@ class StockController extends Controller
 			$niceNames = [
 				'name' => trans('admin.Általános adatok') . '/' . trans('admin.Név'),
 				'clip_length' => trans('admin.Általános adatok') . '/' . trans('admin.Klip hossza'),
-				'aspect_ratio' => trans('admin.Általános adatok') . '/' . trans('admin.Képarány')
+				'aspect_ratio' => trans('admin.Általános adatok') . '/' . trans('admin.Képarány'),
+				'indexImage' => trans('admin.Indexkép'),
 			];
 			$rules = [
 				'name' => 'required',
 				'clip_length' => 'required',
-				'aspect_ratio' => 'required'
+				'aspect_ratio' => 'required',
+				'indexImage' => 'image|mimes:jpeg,png,jpg,gif,svg',
 			];
 			
 			foreach (config('app.languages') as $lang) {
@@ -98,6 +113,7 @@ class StockController extends Controller
 				}
 				$translate->fill($t);
 				if ($translate->slug == '') $translate->slug = Str::slug($translate->meta_title, '-');
+				if ($translate->meta_description == '') $translate->meta_description = Str::limit(strip_tags($translate->meta_lead) != '' ? strip_tags($translate->meta_lead) : strip_tags($translate->meta_body), 250, '...');
 				$translate->save();
 			}
 			
@@ -125,6 +141,18 @@ class StockController extends Controller
 				}
 			}
 			
+			// Index image
+			if ($indexImage = $request->file('indexImage')) {
+				$new_filename = $this->saveIndexImage($indexImage, $model, lqOption('stock_image_original_path', 'uploads/stocks/original'), lqOption('stock_image_path', 'uploads/stocks'), $image_sizes);
+				$model->index_image = $new_filename;
+				$model->save();
+			}
+			else if ($request->get('delete_indexImage')) {
+				$this->deleteIndexImage($model, lqOption('stock_image_original_path', 'uploads/stocks/original'), lqOption('stock_image_path', 'uploads/stocks'), $image_sizes);
+				$model->index_image = NULL;
+				$model->save();
+			}
+			
 			return redirect(route('admin_stock_edit', ['id' => $model->id]))->withInput()->with('form_success_message', [
 				trans('Sikeres mentés'),
 				trans('A v-stock adatai sikeresen rögzítve lettek.'),
@@ -135,6 +163,10 @@ class StockController extends Controller
 			'model' => $model,
 			'video_files' => $this->getFiles(),
 			'tab' => $request->get('tab', 'general_data'),
+			'categories' => Category::all(),
+			'image_sizes' => $image_sizes,
+			'indexImages' => $model->images,
+			'settings' => $settings,
 		]);
 	}
 	
@@ -158,5 +190,21 @@ class StockController extends Controller
 				trans('admin.A v-stock sikeresen el lett távolítva.')
 			]);
 		}
+	}
+	
+	public function indexImagesResize () {
+		// delete old resized files and directories
+		foreach (File::directories(lqOption('stock_image_path', 'uploads/stocks')) as $path) {
+			if (!Str::contains(str_replace('\\', '/', $path), lqOption('stock_image_original_path', 'uploads/stocks/original'))) {
+				File::deleteDirectory($path);
+			}
+		}
+		
+		// create new resized files and directories
+		foreach (stock::whereNotNull('index_image')->get() as $model) {
+			$this->resizeIndexImage($model, lqOption('stock_image_original_path', 'uploads/stocks/original'), lqOption('stock_image_path', 'uploads/stocks'), LqOption::where('lq_key', 'like', 'stock_image_size_%')->get(), $model->index_image);
+		}
+		
+		return redirect(route('admin_stocks_list'));
 	}
 }

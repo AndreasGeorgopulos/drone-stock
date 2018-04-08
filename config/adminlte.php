@@ -108,47 +108,75 @@ return [
 		[
 			'text' => 'Kezdőlap',
 			'route' => 'admin_index',
-			'role' => 'login',
+			'roles' => ['login'],
 			'icon' => 'dashboard',
 			'active' => ['admin'],
 		],
 		[
 			'text' => 'Tartalmak',
-			'route' => 'admin_contents_list',
-			'role' => 'contents',
+			'roles' => ['contents', 'stock'],
 			'icon' => 'newspaper-o',
-			'active' => ['admin/contents/*'],
-		],
-		[
-			'text' => 'Stock',
-			'route' => 'admin_stock_list',
-			'role' => 'stock',
-			'icon' => 'video-camera',
-			'active' => ['admin/stock/*'],
+			'active' => ['admin/contents/*', 'admin/stock/*', 'admin/categories/*'],
+			'submenu' => [[
+					'text' => 'Statikus lapok',
+					'route' => 'admin_contents_list',
+					'roles' => ['contents'],
+					'icon' => 'newspaper-o',
+					'active' => ['admin/contents/*'],
+				],
+				[
+					'text' => 'V-Stock-ok',
+					'route' => 'admin_stock_list',
+					'roles' => ['stock'],
+					'icon' => 'video-camera',
+					'active' => ['admin/stock/*'],
+				],
+				[
+					'text' => 'Kategóriák',
+					'route' => 'admin_categories_list',
+					'roles' => ['stock', 'contents'],
+					'icon' => 'tags',
+					'active' => ['admin/categories/*'],
+				],
+			]
 		],
 		[
 			'text' => 'Felhasználók',
 			'route' => 'admin_users_list',
-			'role' => 'users',
+			'roles' => ['users'],
 			'icon' => 'user',
 			'active' => ['admin/users/*'],
 		],
 		[
-			'text' => 'Jogosultságok',
-			'route' => 'admin_roles_list',
-			'role' => 'roles',
-			'active' => ['admin/roles/*'],
-			'icon' => 'user'
-		],
-		[
-			'text' => 'Fordítások',
-			'route' => 'admin_translation_getindex',
-			'role' => 'translates',
-			'icon' => 'language',
-			'active' => ['admin/translation/*'],
+			'text' => 'Beállítások',
+			'roles' => ['roles', 'translates', 'options'],
+			'icon' => 'gear',
+			'active' => ['admin/roles/*', 'admin/translation', 'admin/translation/*', 'admin/options/*'],
+			'submenu' => [
+				[
+					'text' => 'Jogosultságok',
+					'route' => 'admin_roles_list',
+					'roles' => ['roles'],
+					'active' => ['admin/roles/*'],
+					'icon' => 'users'
+				],
+				[
+					'text' => 'Fordítások',
+					'route' => 'admin_translation_getindex',
+					'roles' => ['translates'],
+					'icon' => 'language',
+					'active' => ['admin/translation', 'admin/translation/*'],
+				],
+				[
+					'text' => 'Opciók',
+					'route' => 'admin_options_list',
+					'roles' => ['options'],
+					'icon' => 'language',
+					'active' => ['admin/options/*'],
+				],
+			]
 		],
 		'NYELV VÁLASZTÁS',
-		
 	],
 
     /*

@@ -15,9 +15,9 @@ class CreateContents extends Migration
     {
         Schema::create('contents', function (Blueprint $table) {
             $table->increments('id')->comment('Egyedi azonosító')->unique();
-            $table->string('title')->comment('Megnevezés');
-            $table->string('picture')->comment('Oldal kép')->nullable();
-            $table->integer('category')->comment('Kategória');
+            $table->string('name', 100)->comment('Megnevezés');
+            $table->string('index_image', 255)->comment('Index kép')->nullable();
+			$table->integer('category_id')->comment('Kategória azonosító');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -25,11 +25,11 @@ class CreateContents extends Migration
         Schema::create('content_translates', function (Blueprint $table) {
             $table->increments('id')->comment('Egyedi azonosító')->unique();
             $table->integer('content_id')->comment('Oldal');
-			$table->string('language_code')->comment('Nyelv');
-            $table->string('slug')->comment('Link')->nullable();
-            $table->string('meta_title')->comment('Meta Megnevezés')->nullable();
-            $table->string('meta_description')->comment('Meta Leírás')->nullable();
-            $table->string('meta_keywords')->comment('Meta Kulcsszavak')->nullable();
+			$table->string('language_code', 10)->comment('Nyelv kód');
+            $table->string('slug', 255)->comment('Link')->nullable();
+            $table->string('meta_title', 255)->comment('Meta Megnevezés')->nullable();
+            $table->text('meta_description')->comment('Meta Leírás')->nullable();
+            $table->text('meta_keywords')->comment('Meta Kulcsszavak')->nullable();
             $table->text('lead')->comment('Bevezető')->nullable();
             $table->text('body')->comment('Tartalom')->nullable();
 			$table->tinyInteger('active')->comment('Aktív');

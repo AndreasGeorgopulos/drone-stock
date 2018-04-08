@@ -46,3 +46,14 @@
 			}
 		}
 	}
+	
+	if (! function_exists('lqOption')) {
+		function lqOption ($key, $default_value = '') {
+			if (!$lq_option = \App\LqOption::where('lq_key', $key)->first()) {
+				$lq_option = new \App\LqOption();
+				$lq_option->fill(['lq_key' => $key, 'lq_value' => $default_value, 'notice' => 'Auto generated']);
+				$lq_option->save();
+			}
+			return $lq_option->lq_value;
+ 		}
+	}

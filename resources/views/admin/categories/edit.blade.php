@@ -1,6 +1,6 @@
 @extends('admin.index')
 @section('content_header')
-    <h1>{{trans('admin.Tartalom')}}: @if($model->id) {{$model->title}} [{{$model->id}}] @else {{trans('admin.Új')}} @endif</h1>
+    <h1>{{trans('admin.Kategória')}}: @if($model->id) {{$model->name}} [{{$model->id}}] @else {{trans('admin.Új')}} @endif</h1>
 @stop
 
 @section('content')
@@ -20,14 +20,14 @@
                     <li @if(old('tab', 'general_data') == 'image') class="active" @endif><a href="#image" data-toggle="tab" aria-expanded="true">{{trans('admin.Indexkép')}}</a></li>
                 </ul>
                 <div class="tab-content">
-                    @include('admin.contents.tab_general')
-                    @include('admin.contents.tab_translates')
+                    @include('admin.categories.tab_general')
+                    @include('admin.categories.tab_translates')
                     @include('admin.layout.form.tab_indeximage')
                 </div>
             </div>
 
             <div class="box-footer">
-                <a href="{{url(route('admin_contents_list'))}}" class="btn btn-default">{{trans('admin.Vissza')}}</a>
+                <a href="{{url(route('admin_categories_list'))}}" class="btn btn-default">{{trans('admin.Vissza')}}</a>
                 <button type="submit" class="btn btn-info pull-right">{{trans('admin.Mentés')}}</button>
             </div>
         </div>
@@ -36,8 +36,6 @@
 
 @section('js')
     <script type="text/javascript">
-        $('textarea.wysig').wysihtml5();
-
         $('.nav-tabs li a').on('click', function () {
             $('#tab').val($(this).attr('href').replace('#', ''));
         });

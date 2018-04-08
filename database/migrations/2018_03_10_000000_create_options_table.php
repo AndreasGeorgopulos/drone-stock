@@ -17,6 +17,9 @@ class CreateOptionsTable extends Migration
             $table->increments('id')->comment('Egyedi azonosító')->unique();
             $table->string('lq_key')->comment('Kulcs');
             $table->string('lq_value')->comment('Érték');
+			$table->string('notice')->nullable()->comment('Megjegyzés');
+			$table->timestamps();
+			$table->softDeletes();
         });
     }
 

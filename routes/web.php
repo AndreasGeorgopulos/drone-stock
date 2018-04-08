@@ -10,12 +10,19 @@ $admin = function () {
 		Route::match(['get', 'post'], '/contents/list', 'ContentController@index')->name('admin_contents_list');
 		Route::match(['get', 'post', 'put'], '/contents/edit/{id?}', 'ContentController@edit')->name('admin_contents_edit');
 		Route::match(['get'], '/contents/delete/{id?}', 'ContentController@delete')->name('admin_contents_delete');
+		Route::match(['get'], '/contents/resize', 'ContentController@indexImagesResize')->name('admin_contents_resize');
 		
-		
-		// pages
+		// stocks
 		Route::match(['get', 'post'], '/stock/list', 'StockController@index')->name('admin_stock_list');
 		Route::match(['get', 'post', 'put'], '/stock/edit/{id?}', 'StockController@edit')->name('admin_stock_edit');
 		Route::match(['get'], '/stock/delete/{id?}', 'StockController@delete')->name('admin_stock_delete');
+		Route::match(['get'], '/stock/resize', 'StockController@indexImagesResize')->name('admin_stock_resize');
+		
+		// categories
+		Route::match(['get', 'post'], '/categories/list', 'CategoryController@index')->name('admin_categories_list');
+		Route::match(['get', 'post', 'put'], '/categories/edit/{id?}', 'CategoryController@edit')->name('admin_categories_edit');
+		Route::match(['get'], '/categories/delete/{id?}', 'CategoryController@delete')->name('admin_categories_delete');
+		Route::match(['get'], '/categories/resize', 'CategoryController@indexImagesResize')->name('admin_categories_resize');
 		
 		// users
 		Route::match(['get', 'post'], '/users/list', 'UserController@index')->name('admin_users_list');
@@ -27,6 +34,11 @@ $admin = function () {
 		Route::match(['get', 'post'], '/roles/list', 'RoleController@index')->name('admin_roles_list');
 		Route::match(['get', 'post', 'put'], '/roles/edit/{id?}', 'RoleController@edit')->name('admin_roles_edit');
 		Route::match(['get'], '/roles/delete/{id?}', 'RoleController@delete')->name('admin_roles_delete');
+		
+		// options
+		Route::match(['get', 'post'], '/options/list', 'OptionController@index')->name('admin_options_list');
+		Route::match(['get', 'post', 'put'], '/options/edit/{id?}', 'OptionController@edit')->name('admin_options_edit');
+		Route::match(['get'], '/options/delete/{id?}', 'OptionController@delete')->name('admin_options_delete');
 		
 		//Fordítások
 		Route::match(['get'], '/translation/view/{group?}', 'TranslationController@getView')->name('admin_translation_getview');
@@ -56,12 +68,11 @@ $drone_stock = function() use ($admin) {
 };
 
 /*Route::domain('delta-triangle.com')->group($delta_triangle);
-Route::domain('delta-triangle.hu')->group($delta_triangle);
+Route::domain('deltatriangle.hu')->group($delta_triangle);
 Route::domain('drone-stock.com')->group($drone_stock);
 Route::domain('drone-stock.hu')->group($drone_stock);*/
-
 	
 Route::domain('delta-triangle-com.local')->group($delta_triangle);
-Route::domain('delta-triangle-hu.local')->group($delta_triangle);
+Route::domain('deltatriangle-hu.local')->group($delta_triangle);
 Route::domain('drone-stock-com.local')->group($drone_stock);
 Route::domain('drone-stock-hu.local')->group($drone_stock);

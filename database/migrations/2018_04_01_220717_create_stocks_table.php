@@ -19,6 +19,7 @@ class CreateStocksTable extends Migration
             $table->string('clip_length', 10)->comment('Hossz');
 			$table->string('aspect_ratio', 10)->comment('Képarány');
 			$table->string('thumbnail_file_name', 255)->nullable()->comment('Thumbnail képfile');
+			$table->integer('category_id')->comment('Kategória azonosító');
             $table->tinyInteger('active')->default(1)->comment('Aktív');
             $table->timestamps();
             $table->softDeletes();

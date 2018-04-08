@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Category;
-use App\Content;
-use App\Content_Translate;
+use App\Category_Translate;
 use App\LqOption;
 use App\Traits\TIndexImage;
 use Illuminate\Http\Request;
@@ -13,7 +12,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
-class ContentController extends Controller
+class CategoryController extends Controller
 {
 	use TIndexImage;
 	
@@ -25,16 +24,16 @@ class ContentController extends Controller
 			$searchtext = $request->get('searchtext', '');
 			
 			if ($searchtext != '') {
-				$list = Content::where('id', 'like', '%' . $searchtext . '%')
+				$list = Category::where('id', 'like', '%' . $searchtext . '%')
 					->orWhere('title', 'like', '%' . $searchtext . '%')
 					->orderby($sort, $direction)
 					->paginate($length);
 			}
 			else {
-				$list = Content::orderby($sort, $direction)->paginate($length);
+				$list = Category::orderby($sort, $direction)->paginate($length);
 			}
 			
-			return view('admin.contents.list', [
+			return view('admin.categories.list', [
 				'list' => $list,
 				'sort' => $sort,
 				'direction' => $direction,
@@ -42,24 +41,24 @@ class ContentController extends Controller
 			]);
 		}
 		
-		return view('admin.contents.index');
+		return view('admin.categories.index');
 	}
 	
 	public function edit (Request $request, $id = 0) {
-		$image_sizes = LqOption::where('lq_key', 'like', 'content_image_size_%')->get();
+		$image_sizes = LqOption::where('lq_key', 'like', 'category_image_size_%')->get();
 		$settings = [
-			['title' => trans('admin.Index képek elérési útvonala'), 'value' => lqOption('content_image_path', 'uploads/contents')],
-			['title' => trans('admin.Eredeti képek elérési útvonala'), 'value' => lqOption('content_image_original_path', 'uploads/contents/original')],
+			['title' => trans('admin.Index képek elérési útvonala'), 'value' => lqOption('category_image_path', 'uploads/categories')],
+			['title' => trans('admin.Eredeti képek elérési útvonala'), 'value' => lqOption('category_image_original_path', 'uploads/categories/original')],
 			['title' => trans('admin.Feltöltött képek méretezése'), 'value' => collect($image_sizes)->implode('lq_value',	', ')],
 			['title' => 'upload_max_filesize', 'value' => ini_get('upload_max_filesize')],
 			['title' => 'post_max_size', 'value' => ini_get('post_max_size')],
 		];
 		
-		$model = Content::findOrNew($id);
+		$model = Category::findOrNew($id);
 		
 		if ($request->isMethod('post')) {
 			// validator settings
-			$niceNames = ['title' => 'Cím', 'indexImage' => trans('admin.Indexkép')];
+			$niceNames = ['name' => trans('admin.Név'), 'indexImage' => trans('admin.Indexkép')];
 			$rules = ['name' => 'required', 'indexImage' => 'image|mimes:jpeg,png,jpg,gif,svg'];
 			
 			foreach (config('app.languages') as $lang) {
@@ -71,9 +70,9 @@ class ContentController extends Controller
 			$validator = Validator::make($request->all(), $rules);
 			$validator->setAttributeNames($niceNames);
 			if ($validator->fails()) {
-				return redirect(route('admin_contents_edit', ['id' => $id]))->withErrors($validator)->withInput()->with('form_warning_message', [
+				return redirect(route('admin_categories_edit', ['id' => $id]))->withErrors($validator)->withInput()->with('form_warning_message', [
 					trans('admin.Sikertelen mentés'),
-					trans('admin.A tartalom adatainak rögzítése nem sikerült a következő hibák miatt:')
+					trans('admin.A kategória adatainak rögzítése nem sikerült a következő hibák miatt:')
 				]);
 			}
 			
@@ -84,8 +83,8 @@ class ContentController extends Controller
 			// Translates save
 			foreach ($request->get('translate') as $lang => $t) {
 				if (!$translate = $model->translates()->where('language_code', $lang)->first()) {
-					$translate = new Content_Translate();
-					$translate->content_id = $model->id;
+					$translate = new Category_Translate();
+					$translate->category_id = $model->id;
 					$translate->language_code = $lang;
 				}
 				$translate->fill($t);
@@ -96,26 +95,25 @@ class ContentController extends Controller
 			
 			// Index image
 			if ($indexImage = $request->file('indexImage')) {
-				$new_filename = $this->saveIndexImage($indexImage, $model, lqOption('content_image_original_path', 'uploads/contents/original'), lqOption('content_image_path', 'uploads/contents'), $image_sizes);
+				$new_filename = $this->saveIndexImage($indexImage, $model, lqOption('category_image_original_path', 'uploads/categories/original'), lqOption('category_image_path', 'uploads/categories'), $image_sizes);
 				$model->index_image = $new_filename;
 				$model->save();
 			}
 			else if ($request->get('delete_indexImage')) {
-				$this->deleteIndexImage($model, lqOption('content_image_original_path', 'uploads/contents/original'), lqOption('content_image_path', 'uploads/contents'), $image_sizes);
+				$this->deleteIndexImage($model, lqOption('category_image_original_path', 'uploads/categories/original'), lqOption('category_image_path', 'uploads/categories'), $image_sizes);
 				$model->index_image = NULL;
 				$model->save();
 			}
 			
-			return redirect(route('admin_contents_edit', ['id' => $model->id]))->with('form_success_message', [
+			return redirect(route('admin_categories_edit', ['id' => $model->id]))->withInput()->with('form_success_message', [
 				trans('Sikeres mentés'),
-				trans('A tartalom adatai sikeresen rögzítve lettek.'),
+				trans('A kategória adatai sikeresen rögzítve lettek.'),
 			]);
 		}
 		
-		return view('admin.contents.edit', [
+		return view('admin.categories.edit', [
 			'model' => $model,
 			'tab' => $request->get('tab', 'general_data'),
-			'categories' => Category::all(),
 			'image_sizes' => $image_sizes,
 			'indexImages' => $model->images,
 			'settings' => $settings,
@@ -123,29 +121,30 @@ class ContentController extends Controller
 	}
 	
 	public function delete ($id) {
-		if ($model = Content::find($id)) {
+		if ($model = Category::find($id)) {
+			$this->deleteIndexImage($model, lqOption('category_image_original_path', 'uploads/categories/original'), lqOption('category_image_path', 'uploads/categories'), LqOption::where('lq_key', 'like', 'category_image_size_%')->get());
 			$model->translates()->delete();
 			$model->delete();
-			return redirect(route('admin_contents_list'))->with('form_success_message', [
+			return redirect(route('admin_categories_list'))->with('form_success_message', [
 				trans('admin.Sikeres törlés'),
-				trans('admin.A tartalom sikeresen el lett távolítva.')
+				trans('admin.A kategória sikeresen el lett távolítva.')
 			]);
 		}
 	}
 	
 	public function indexImagesResize () {
 		// delete old resized files and directories
-		foreach (File::directories(lqOption('content_image_path', 'uploads/contents')) as $path) {
-			if (!Str::contains(str_replace('\\', '/', $path), lqOption('content_image_original_path', 'uploads/contents/original'))) {
+		foreach (File::directories(lqOption('category_image_path', 'uploads/categories')) as $path) {
+			if (!Str::contains(str_replace('\\', '/', $path), lqOption('category_image_original_path', 'uploads/categories/original'))) {
 				File::deleteDirectory($path);
 			}
 		}
 		
 		// create new resized files and directories
-		foreach (content::whereNotNull('index_image')->get() as $model) {
-			$this->resizeIndexImage($model, lqOption('content_image_original_path', 'uploads/contents/original'), lqOption('content_image_path', 'uploads/contents'), LqOption::where('lq_key', 'like', 'content_image_size_%')->get(), $model->index_image);
+		foreach (Category::whereNotNull('index_image')->get() as $model) {
+			$this->resizeIndexImage($model, lqOption('category_image_original_path', 'uploads/categories/original'), lqOption('category_image_path', 'uploads/categories'), LqOption::where('lq_key', 'like', 'category_image_size_%')->get(), $model->index_image);
 		}
 		
-		return redirect(route('admin_contents_list'));
+		return redirect(route('admin_categories_list'));
 	}
 }

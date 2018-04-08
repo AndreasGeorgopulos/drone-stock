@@ -4,7 +4,7 @@
 @stop
 
 @section('content')
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {{csrf_field()}}
         <input type="hidden" name="tab" value="{{old('tab', 'general_data')}}" id="tab" />
         @include('admin.layout.messages')
@@ -24,7 +24,7 @@
                     @include('admin.stock.tab_general')
                     @include('admin.stock.tab_translates')
                     @include('admin.stock.tab_videos')
-                    @include('admin.stock.tab_image')
+                    @include('admin.layout.form.tab_indeximage')
                 </div>
             </div>
 

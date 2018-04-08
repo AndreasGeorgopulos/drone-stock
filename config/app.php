@@ -184,6 +184,7 @@ return [
 	
 		Barryvdh\TranslationManager\ManagerServiceProvider::class,
 		Pawlox\VideoThumbnail\VideoThumbnailServiceProvider::class,
+		Intervention\Image\ImageServiceProvider::class,
     ],
 
     /*
@@ -235,7 +236,7 @@ return [
 	
 	
 		'VideoThumbnail' => Pawlox\VideoThumbnail\Facade\VideoThumbnail::class,
-
+		'Image' => Intervention\Image\Facades\Image::class,
     ],
 
 ];
