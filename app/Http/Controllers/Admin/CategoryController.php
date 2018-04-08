@@ -45,11 +45,11 @@ class CategoryController extends Controller
 	}
 	
 	public function edit (Request $request, $id = 0) {
-		$image_sizes = LqOption::where('lq_key', 'like', 'category_image_size_%')->get();
+		$image_sizes = explode(',', lqOption('category_image_sizes', '80*80,250*250,500*500'));
 		$settings = [
 			['title' => trans('admin.Index képek elérési útvonala'), 'value' => lqOption('category_image_path', 'uploads/categories')],
 			['title' => trans('admin.Eredeti képek elérési útvonala'), 'value' => lqOption('category_image_original_path', 'uploads/categories/original')],
-			['title' => trans('admin.Feltöltött képek méretezése'), 'value' => collect($image_sizes)->implode('lq_value',	', ')],
+			['title' => trans('admin.Feltöltött képek méretezése'), 'value' => implode(', ', $image_sizes)],
 			['title' => 'upload_max_filesize', 'value' => ini_get('upload_max_filesize')],
 			['title' => 'post_max_size', 'value' => ini_get('post_max_size')],
 		];
@@ -122,7 +122,7 @@ class CategoryController extends Controller
 	
 	public function delete ($id) {
 		if ($model = Category::find($id)) {
-			$this->deleteIndexImage($model, lqOption('category_image_original_path', 'uploads/categories/original'), lqOption('category_image_path', 'uploads/categories'), LqOption::where('lq_key', 'like', 'category_image_size_%')->get());
+			$this->deleteIndexImage($model, lqOption('category_image_original_path', 'uploads/categories/original'), lqOption('category_image_path', 'uploads/categories'), explode(',', LqOption::where('lq_key', 'like', 'category_image_sizes')->first()->lq_value));
 			$model->translates()->delete();
 			$model->delete();
 			return redirect(route('admin_categories_list'))->with('form_success_message', [
@@ -142,7 +142,7 @@ class CategoryController extends Controller
 		
 		// create new resized files and directories
 		foreach (Category::whereNotNull('index_image')->get() as $model) {
-			$this->resizeIndexImage($model, lqOption('category_image_original_path', 'uploads/categories/original'), lqOption('category_image_path', 'uploads/categories'), LqOption::where('lq_key', 'like', 'category_image_size_%')->get(), $model->index_image);
+			$this->resizeIndexImage($model, lqOption('category_image_original_path', 'uploads/categories/original'), lqOption('category_image_path', 'uploads/categories'), explode(',', lqOption('category_image_sizes', '80*80,250*250,500*500')), $model->index_image);
 		}
 		
 		return redirect(route('admin_categories_list'));

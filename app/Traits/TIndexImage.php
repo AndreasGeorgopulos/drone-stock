@@ -26,7 +26,7 @@
 		
 		public function resizeIndexImage ($model, $originalPath, $path, $image_sizes, $filename) {
 			foreach ($image_sizes as $size) {
-				$size = explode('*', $size->lq_value);
+				$size = explode('*', $size);
 				$targetPath = $path . '/' . implode('_', $size);
 				
 				if (!File::isDirectory($targetPath)) {
@@ -51,7 +51,7 @@
 			
 			// delete resized files
 			foreach ($image_sizes as $size) {
-				$size = explode('*', $size->lq_value);
+				$size = explode('*', $size);
 				$targetPath = $path . '/' . implode('_', $size);
 				
 				if ($model->index_image != NULL && File::exists($targetPath . '/' . $model->index_image)) {
@@ -73,7 +73,7 @@
 			}
 			
 			foreach ($image_sizes as $size) {
-				$size = explode('*', $size->lq_value);
+				$size = explode('*', $size);
 				$path = $sizesPath . '/' . implode('_', $size) . '/' . $filename;
 				if (File::exists($path)) {
 					$images[implode('_', $size)] = [
@@ -86,9 +86,5 @@
 			}
 			
 			return $images;
-		}
-		
-		public function resizeIndexImages ($path) {
-		
 		}
 	}

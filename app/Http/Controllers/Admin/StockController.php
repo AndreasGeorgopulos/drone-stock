@@ -47,11 +47,11 @@ class StockController extends Controller
 	}
 	
 	public function edit (Request $request, $id = 0) {
-		$image_sizes = LqOption::where('lq_key', 'like', 'stock_image_size_%')->get();
+		$image_sizes = explode(',', lqOption('stock_image_sizes', '80*80,250*250,500*500'));
 		$settings = [
 			['title' => trans('admin.Index képek elérési útvonala'), 'value' => lqOption('stock_image_path', 'uploads/stocks')],
 			['title' => trans('admin.Eredeti képek elérési útvonala'), 'value' => lqOption('stock_image_original_path', 'uploads/stocks/original')],
-			['title' => trans('admin.Feltöltött képek méretezése'), 'value' => collect($image_sizes)->implode('lq_value',	', ')],
+			['title' => trans('admin.Feltöltött képek méretezése'), 'value' => implode(', ', $image_sizes)],
 			['title' => 'upload_max_filesize', 'value' => ini_get('upload_max_filesize')],
 			['title' => 'post_max_size', 'value' => ini_get('post_max_size')],
 		];
@@ -201,10 +201,10 @@ class StockController extends Controller
 		}
 		
 		// create new resized files and directories
-		foreach (stock::whereNotNull('index_image')->get() as $model) {
-			$this->resizeIndexImage($model, lqOption('stock_image_original_path', 'uploads/stocks/original'), lqOption('stock_image_path', 'uploads/stocks'), LqOption::where('lq_key', 'like', 'stock_image_size_%')->get(), $model->index_image);
+		foreach (Stock::whereNotNull('index_image')->get() as $model) {
+			$this->resizeIndexImage($model, lqOption('stock_image_original_path', 'uploads/stocks/original'), lqOption('stock_image_path', 'uploads/stocks'), explode(',', lqOption('stock_image_sizes', '80*80,250*250,500*500')), $model->index_image);
 		}
 		
-		return redirect(route('admin_stocks_list'));
+		return redirect(route('admin_stock_list'));
 	}
 }

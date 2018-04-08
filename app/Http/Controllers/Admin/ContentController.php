@@ -46,11 +46,11 @@ class ContentController extends Controller
 	}
 	
 	public function edit (Request $request, $id = 0) {
-		$image_sizes = LqOption::where('lq_key', 'like', 'content_image_size_%')->get();
+		$image_sizes = explode(',', lqOption('content_image_sizes', '80*80,250*250,500*500'));
 		$settings = [
 			['title' => trans('admin.Index képek elérési útvonala'), 'value' => lqOption('content_image_path', 'uploads/contents')],
 			['title' => trans('admin.Eredeti képek elérési útvonala'), 'value' => lqOption('content_image_original_path', 'uploads/contents/original')],
-			['title' => trans('admin.Feltöltött képek méretezése'), 'value' => collect($image_sizes)->implode('lq_value',	', ')],
+			['title' => trans('admin.Feltöltött képek méretezése'), 'value' => implode(', ', $image_sizes)],
 			['title' => 'upload_max_filesize', 'value' => ini_get('upload_max_filesize')],
 			['title' => 'post_max_size', 'value' => ini_get('post_max_size')],
 		];
@@ -143,7 +143,7 @@ class ContentController extends Controller
 		
 		// create new resized files and directories
 		foreach (content::whereNotNull('index_image')->get() as $model) {
-			$this->resizeIndexImage($model, lqOption('content_image_original_path', 'uploads/contents/original'), lqOption('content_image_path', 'uploads/contents'), LqOption::where('lq_key', 'like', 'content_image_size_%')->get(), $model->index_image);
+			$this->resizeIndexImage($model, lqOption('content_image_original_path', 'uploads/contents/original'), lqOption('content_image_path', 'uploads/contents'), explode(',', lqOption('content_image_sizes', '80*80,250*250,500*500')), $model->index_image);
 		}
 		
 		return redirect(route('admin_contents_list'));

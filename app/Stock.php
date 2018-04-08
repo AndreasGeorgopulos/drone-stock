@@ -28,7 +28,7 @@ class Stock extends Model
 	
 	public function getImagesAttribute () {
 		if ($this->index_image != NULL) {
-			return $this->getIndexImages($this->index_image, lqOption('stock_image_original_path', 'uploads/categories/original'), lqOption('stock_image_path', 'uploads/stocks'), LqOption::where('lq_key', 'like', 'stock_image_size_%')->get());
+			return $this->getIndexImages($this->index_image, lqOption('stock_image_original_path', 'uploads/categories/original'), lqOption('stock_image_path', 'uploads/stocks'), explode(',', lqOption('stock_image_sizes', '80*80,250*250,500*500')));
 		}
 	}
 }
