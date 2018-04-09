@@ -7,7 +7,8 @@
                     <thead>
                     <tr role="row">
                         <th class="@if($sort == 'id') sorting_{{$direction}} @else sorting @endif" data-column="id">#</th>
-                        <th class="@if($sort == 'name') sorting_{{$direction}} @else sorting @endif" data-column="name">{{trans('admin.Cím')}}</th>
+                        <th class="@if($sort == 'name') sorting_{{$direction}} @else sorting @endif" data-column="name">{{trans('admin.Név')}}</th>
+                        <th data-column="category_id">{{trans('admin.Kategória')}}</th>
                         <th class="@if($sort == 'clip_length') sorting_{{$direction}} @else sorting @endif" data-column="clip_length">{{trans('admin.Klip hossza')}}</th>
                         <th class="@if($sort == 'aspect_ratio') sorting_{{$direction}} @else sorting @endif" data-column="aspect_ratio">{{trans('admin.Képarány')}}</th>
                         <th>{{trans('admin.Rögzített file-ok')}}</th>
@@ -22,6 +23,7 @@
                         <tr role="row" class="odd">
                             <td>{{$model->id}}</td>
                             <td>{{$model->name}}</td>
+                            <td>{{$model->category ? $model->category->name : ''}}</td>
                             <td>{{$model->clip_length}}</td>
                             <td>{{$model->aspect_ratio}}</td>
                             <td>{{$model->sizes()->count()}}</td>

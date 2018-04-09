@@ -117,19 +117,20 @@ return [
 			'roles' => ['contents', 'stock'],
 			'icon' => 'newspaper-o',
 			'active' => ['admin/contents/*', 'admin/stock/*', 'admin/categories/*'],
-			'submenu' => [[
-					'text' => 'Statikus lapok',
-					'route' => 'admin_contents_list',
-					'roles' => ['contents'],
-					'icon' => 'newspaper-o',
-					'active' => ['admin/contents/*'],
-				],
+			'submenu' => [
 				[
 					'text' => 'V-Stock-ok',
 					'route' => 'admin_stock_list',
 					'roles' => ['stock'],
 					'icon' => 'video-camera',
 					'active' => ['admin/stock/*'],
+				],
+				[
+					'text' => 'Statikus lapok',
+					'route' => 'admin_contents_list',
+					'roles' => ['contents'],
+					'icon' => 'newspaper-o',
+					'active' => ['admin/contents/*'],
 				],
 				[
 					'text' => 'Kategóriák',

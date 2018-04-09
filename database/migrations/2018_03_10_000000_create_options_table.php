@@ -16,7 +16,7 @@ class CreateOptionsTable extends Migration
         Schema::create('lq_options', function (Blueprint $table) {
             $table->increments('id')->comment('Egyedi azonosító')->unique();
             $table->string('lq_key')->comment('Kulcs');
-            $table->string('lq_value')->comment('Érték');
+            $table->text('lq_value')->comment('Érték');
 			$table->string('notice')->nullable()->comment('Megjegyzés');
 			$table->timestamps();
 			$table->softDeletes();

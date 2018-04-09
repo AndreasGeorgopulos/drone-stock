@@ -62,8 +62,13 @@ $delta_triangle = function() use ($admin) {
 
 $drone_stock = function() use ($admin) {
 	$admin();
-	Route::group(['namespace' => 'Domains\DroneStock'], function() {
+	Route::group(['namespace' => 'Domains\DroneStock', 'middleware' => ['locale']], function() {
 		Route::get('/', 'IndexController@index');
+		
+		Route::get('/change_language/{lang}', 'IndexController@changeLanguage');
+		
+		Route::get('/v-stock/{category_slug}', 'StockController@category');
+		Route::get('/v-stock/{category_slug}/{stock_slug}', 'StockController@stock');
 	});
 };
 

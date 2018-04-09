@@ -20,7 +20,7 @@
                         <tr role="row" class="odd">
                             <td>{{$model->id}}</td>
                             <td>{{$model->lq_key}}</td>
-                            <td>{{$model->lq_value}}</td>
+                            <td>{!! nl2br($model->lq_value) !!}</td>
                             <td>{{$model->notice}}</td>
                             <td>
                                 <div class="btn-group pull-right">

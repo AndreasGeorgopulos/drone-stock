@@ -8,6 +8,7 @@
                     <tr role="row">
                         <th class="@if($sort == 'id') sorting_{{$direction}} @else sorting @endif" data-column="id">#</th>
                         <th class="@if($sort == 'title') sorting_{{$direction}} @else sorting @endif" data-column="key">{{trans('admin.Cím')}}</th>
+                        <th data-column="category_id">{{trans('admin.Kategória')}}</th>
                         <th>
                             <a href="{{url(route('admin_contents_edit'))}}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-plus"></i> {{trans('admin.Új tartalom')}}</a>
                         </th>
@@ -19,6 +20,7 @@
                         <tr role="row" class="odd">
                             <td>{{$model->id}}</td>
                             <td>{{$model->name}}</td>
+                            <td>{{$model->category ? $model->category->name : ''}}</td>
                             <td>
                                 <div class="btn-group pull-right">
                                     <button type="button" class="btn btn-primary btn-sm">{{trans('admin.Műveletek')}}</button>
