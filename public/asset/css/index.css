@@ -1,1 +1,9 @@
-body { }
+.hidden { display: none; }
+
+.wrapper { width: 100%; padding: 0px 20px 0px 20px; }
+
+.categories article { padding: 10px 10px 10px 10px; border: solid 1px #d0d0d0; margin-bottom: 20px; }
+.categories article a {  display: block; }
+.categories article h2 { display: none; }
+.categories article div.title { color: #000000; font-size: 14px; font-weight: bold; }
+.categories article img { width: 100%; }

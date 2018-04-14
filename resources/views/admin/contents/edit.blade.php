@@ -1,6 +1,6 @@
 @extends('admin.index')
 @section('content_header')
-    <h1>{{trans('admin.Tartalom')}}: @if($model->id) {{$model->title}} [{{$model->id}}] @else {{trans('admin.Új')}} @endif</h1>
+    <h1>{{trans('admin.Statikus lapok')}}: @if($model->id) {{$model->name}} [{{$model->id}}] @else {{trans('admin.Új')}} @endif</h1>
 @stop
 
 @section('content')

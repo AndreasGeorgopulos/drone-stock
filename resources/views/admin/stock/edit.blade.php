@@ -17,14 +17,14 @@
                         <li @if(old('tab', 'general_data') == $lang . '_data') class="active" @endif><a href="#{{$lang}}_data" data-toggle="tab" aria-expanded="false">{{trans('admin.' . $lang)}}</a></li>
                     @endforeach
 
-                    <li @if(old('tab', 'general_data') == 'video_data') class="active" @endif><a href="#video_data" data-toggle="tab" aria-expanded="false">{{trans('admin.Video file-ok')}}</a></li>
                     <li @if(old('tab', 'general_data') == 'image') class="active" @endif><a href="#image" data-toggle="tab" aria-expanded="false">{{trans('admin.Index kép')}}</a></li>
+                    <li @if(old('tab', 'general_data') == 'video_data') class="active" @endif><a href="#video_data" data-toggle="tab" aria-expanded="false">{{trans('admin.Video file-ok')}}</a></li>
                 </ul>
                 <div class="tab-content">
                     @include('admin.stock.tab_general')
                     @include('admin.stock.tab_translates')
-                    @include('admin.stock.tab_videos')
                     @include('admin.layout.form.tab_indeximage')
+                    @include('admin.stock.tab_videos')
                 </div>
             </div>
 

@@ -40,8 +40,8 @@
         <div class="form-group col-md-6">
             <label>{{trans('admin.Aktív')}}</label>
             <select class="form-control select2" name="translate[{{$lang}}][active]">
-                <option value="1" @if(old('active', $translate->active) == 1) selected="selected" @endif>{{trans('admin.Igen')}}</option>
-                <option value="0" @if(old('active', $translate->active) == 0) selected="selected" @endif>{{trans('admin.Nem')}}</option>
+                <option value="1" @if(old('translate.' . $lang . '.active', $translate->active) == 1) selected="selected" @endif>{{trans('admin.Igen')}}</option>
+                <option value="0" @if(old('translate.' . $lang . '.active', $translate->active) == 0) selected="selected" @endif>{{trans('admin.Nem')}}</option>
             </select>
         </div>
 

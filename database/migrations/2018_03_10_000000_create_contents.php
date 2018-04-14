@@ -15,6 +15,7 @@ class CreateContents extends Migration
     {
         Schema::create('contents', function (Blueprint $table) {
             $table->increments('id')->comment('Egyedi azonosító')->unique();
+            $table->interger('uploader_user_id')->comment('Feltöltő felhasználó azonosító');
             $table->string('name', 100)->comment('Megnevezés');
             $table->string('index_image', 255)->comment('Index kép')->nullable();
 			$table->integer('category_id')->comment('Kategória azonosító');

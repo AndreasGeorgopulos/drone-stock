@@ -15,6 +15,7 @@ class CreateCategoriesTable extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->increments('id')->comment('Egyedi azonosító');
+			$table->interger('uploader_user_id')->comment('Feltöltő felhasználó azonosító');
             $table->string('name', 100);
 			$table->string('index_image', 255)->comment('Index kép')->nullable();
             $table->tinyInteger('active')->default(1);

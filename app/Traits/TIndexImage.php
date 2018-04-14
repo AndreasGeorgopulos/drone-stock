@@ -5,7 +5,7 @@
 	
 	trait TIndexImage {
 		
-		public function saveIndexImage ($indexImage, $model, $originalPath, $path, $image_sizes) {
+		public function saveIndexImage ($indexImage, $model, $originalPath, $path, $image_sizes, $aspectRatio = 0) {
 			// delete previos file
 			// move new original file
 			$originalPath = public_path($originalPath);
@@ -19,12 +19,12 @@
 			
 			// create resized image from original
 			// delete previous resized file
-			$this->resizeIndexImage($model, $originalPath, $path, $image_sizes, $new_filename);
+			$this->resizeIndexImage($model, $originalPath, $path, $image_sizes, $new_filename, $aspectRatio);
 			
 			return $new_filename;
 		}
 		
-		public function resizeIndexImage ($model, $originalPath, $path, $image_sizes, $filename) {
+		public function resizeIndexImage ($model, $originalPath, $path, $image_sizes, $filename, $aspectRatio = 0) {
 			foreach ($image_sizes as $size) {
 				$size = explode('*', $size);
 				$targetPath = $path . '/' . implode('_', $size);
@@ -36,7 +36,11 @@
 					File::delete($targetPath . '/' . $model->index_image);
 				}
 				
-				\Image::make($originalPath . '/' . $filename)->resize($size[0], $size[1])->save($targetPath . '/' . $filename);
+				$func = function ($constraint) use ($aspectRatio) {
+					if ($aspectRatio) $constraint->aspectRatio();
+				};
+				
+				\Image::make($originalPath . '/' . $filename)->resize($size[0], $size[1], $func)->save($targetPath . '/' . $filename);
 			}
 		}
 		

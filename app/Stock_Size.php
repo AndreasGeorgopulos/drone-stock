@@ -10,5 +10,5 @@ class Stock_Size extends Model
 	use SoftDeletes;
 	
 	protected $table = 'stock_sizes';
-	protected $fillable = ['name', 'size', 'fps', 'type', 'file_name', 'file_size'];
+	protected $fillable = ['name', 'size', 'fps', 'type', 'file_name', 'file_size', 'price'];
 }

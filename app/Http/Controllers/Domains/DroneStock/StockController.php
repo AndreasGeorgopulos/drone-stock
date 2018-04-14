@@ -9,16 +9,18 @@ use App\Stock_Translate;
 use App\Traits\TFrontend;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class StockController extends Controller
 {
 	use TFrontend;
 	
 	public function category ($category_slug) {
-		if (!$t = Category_Translate::where('slug', $category_slug)->where('active', 1)->first()) {
+		$is_admin = Auth::check() ? Auth::user()->roles()->whereIn('key', ['superadmin', 'categories'])->count() : 0;
+		if (!($t = Category_Translate::where('slug', $category_slug)->first()) || (!$t->active && !$is_admin)) {
 			return redirect('/');
 		}
-		if (!($category = Category::find($t->category_id)) || !$category->active) {
+		if (!($category = Category::find($t->category_id)) || (!$category->active && !$is_admin)) {
 			return redirect('/');
 		}
 		$this->setLanguage($t->language_code);
@@ -39,18 +41,19 @@ class StockController extends Controller
 	}
 	
 	public function stock ($category_slug, $stock_slug) {
-		if (!$t = Category_Translate::where('slug', $category_slug)->where('active', 1)->first()) {
+		$is_admin = Auth::check() ? Auth::user()->roles()->whereIn('key', ['superadmin', 'stock'])->count() : 0;
+		if (!($t = Category_Translate::where('slug', $category_slug)->first()) || (!$t->active && !$is_admin)) {
 			return redirect('/');
 		}
-		if (!($category = Category::find($t->category_id)) || !$category->active) {
+		if (!($category = Category::find($t->category_id)) || (!$category->active && !$is_admin)) {
 			return redirect('/');
 		}
 		
-		if (!$t = Stock_Translate::where('slug', $stock_slug)->where('active', 1)->first()) {
-			return redirect('/v-stock/' . $category_slug);
+		if (!($t = Stock_Translate::where('slug', $stock_slug)->first()) || (!$t->active && !$is_admin)) {
+			return redirect('/video/' . $category_slug);
 		}
-		if (!($stock = Stock::find($t->stock_id)) || !$stock->active) {
-			return redirect('/v-stock/' . $category_slug);
+		if (!($stock = Stock::find($t->stock_id)) || (!$stock->active && !$is_admin)) {
+			return redirect('/video/' . $category_slug);
 		}
 		$this->setLanguage($t->language_code);
 		

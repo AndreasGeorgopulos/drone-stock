@@ -8,6 +8,7 @@ use App\LqOption;
 use App\Traits\TIndexImage;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -24,10 +25,20 @@ class CategoryController extends Controller
 			$searchtext = $request->get('searchtext', '');
 			
 			if ($searchtext != '') {
-				$list = Category::where('id', 'like', '%' . $searchtext . '%')
-					->orWhere('title', 'like', '%' . $searchtext . '%')
-					->orderby($sort, $direction)
-					->paginate($length);
+				$list = Category::with('translates')->whereHas('translates', function ($query) use ($searchtext) {
+							$query->where('meta_title', 'like', '%' . $searchtext . '%')
+								->orWhere('meta_description', 'like', '%' . $searchtext . '%')
+								->orWhere('meta_keywords', 'like', '%' . $searchtext . '%');
+						})
+						->with('uploader')->orWhereHas('uploader', function ($query) use ($searchtext) {
+							$query->where('name', 'like', '%' . $searchtext . '%');
+						})
+						->orWhere('id', 'like', '%' . $searchtext . '%')
+						->orWhere('name', 'like', '%' . $searchtext . '%')
+						->orWhere('created_at', 'like', '%' . str_replace('.', '-', $searchtext) . '%')
+						->orWhere('updated_at', 'like', '%' . str_replace('.', '-', $searchtext) . '%')
+						->orderby($sort, $direction)
+						->paginate($length);
 			}
 			else {
 				$list = Category::orderby($sort, $direction)->paginate($length);
@@ -55,6 +66,7 @@ class CategoryController extends Controller
 		];
 		
 		$model = Category::findOrNew($id);
+		if (empty($model->uploader_user_id)) $model->uploader_user_id = Auth::user()->id;
 		
 		if ($request->isMethod('post')) {
 			// validator settings
@@ -95,7 +107,7 @@ class CategoryController extends Controller
 			
 			// Index image
 			if ($indexImage = $request->file('indexImage')) {
-				$new_filename = $this->saveIndexImage($indexImage, $model, lqOption('category_image_original_path', 'uploads/categories/original'), lqOption('category_image_path', 'uploads/categories'), $image_sizes);
+				$new_filename = $this->saveIndexImage($indexImage, $model, lqOption('category_image_original_path', 'uploads/categories/original'), lqOption('category_image_path', 'uploads/categories'), $image_sizes, lqOption('category_image_aspect_ratio', 0));
 				$model->index_image = $new_filename;
 				$model->save();
 			}
@@ -142,9 +154,12 @@ class CategoryController extends Controller
 		
 		// create new resized files and directories
 		foreach (Category::whereNotNull('index_image')->get() as $model) {
-			$this->resizeIndexImage($model, lqOption('category_image_original_path', 'uploads/categories/original'), lqOption('category_image_path', 'uploads/categories'), explode(',', lqOption('category_image_sizes', '80*80,250*250,500*500')), $model->index_image);
+			$this->resizeIndexImage($model, lqOption('category_image_original_path', 'uploads/categories/original'), lqOption('category_image_path', 'uploads/categories'), explode(',', lqOption('category_image_sizes', '80*80,250*250,500*500')), $model->index_image, lqOption('category_image_aspect_ratio', 0));
 		}
 		
-		return redirect(route('admin_categories_list'));
+		return redirect(route('admin_categories_list'))->with('form_success_message', [
+			trans('Sikeres átméretezés'),
+			trans('A kategóriák indexképei sikeresen át lettek méretezve a következőkre: ' . lqOption('category_image_sizes', '80*80,250*250,500*500')),
+		]);
 	}
 }

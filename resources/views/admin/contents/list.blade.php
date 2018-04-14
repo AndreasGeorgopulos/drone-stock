@@ -6,9 +6,14 @@
                 <table class="table table-bordered table-striped dataTable">
                     <thead>
                     <tr role="row">
+                        <th class="hidden-xs">#</th>
                         <th class="@if($sort == 'id') sorting_{{$direction}} @else sorting @endif" data-column="id">#</th>
-                        <th class="@if($sort == 'title') sorting_{{$direction}} @else sorting @endif" data-column="key">{{trans('admin.Cím')}}</th>
+                        <th class="@if($sort == 'name') sorting_{{$direction}} @else sorting @endif" data-column="name">{{trans('admin.Név')}}</th>
                         <th data-column="category_id">{{trans('admin.Kategória')}}</th>
+                        <th class="visible-lg">{{trans('admin.Feltöltő')}}</th>
+                        <th class="visible-lg @if($sort == 'created_at') sorting_{{$direction}} @else sorting @endif" data-column="created_at">{{trans('admin.Feltöltve')}}</th>
+                        <th class="visible-md visible-lg @if($sort == 'updated_at') sorting_{{$direction}} @else sorting @endif" data-column="updated_at">{{trans('admin.Módosítva')}}</th>
+
                         <th>
                             <a href="{{url(route('admin_contents_edit'))}}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-plus"></i> {{trans('admin.Új tartalom')}}</a>
                         </th>
@@ -18,9 +23,13 @@
                     @foreach ($list as $model)
                         <?php $translate = $model->translates()->where('language_code', App::getLocale())->first(); ?>
                         <tr role="row" class="odd">
+                            <td class="hidden-xs">@if(!empty($model->images['50_50']['url']))<img src="{{$model->images['50_50']['url']}}" />@endif</td>
                             <td>{{$model->id}}</td>
                             <td>{{$model->name}}</td>
                             <td>{{$model->category ? $model->category->name : ''}}</td>
+                            <td class="visible-lg">{{$model->uploader->name}}</td>
+                            <td class="visible-lg">{{\Carbon\Carbon::createFromTimestamp(strtotime($model->created_at))->format(lqOption('datetime_format_' . App::getLocale(), 'Y.m.d @H:i'))}}</td>
+                            <td class="visible-md visible-lg">{{\Carbon\Carbon::createFromTimestamp(strtotime($model->created_at))->format(lqOption('datetime_format_' . App::getLocale(), 'Y.m.d @H:i'))}}</td>
                             <td>
                                 <div class="btn-group pull-right">
                                     <button type="button" class="btn btn-primary btn-sm">{{trans('admin.Műveletek')}}</button>

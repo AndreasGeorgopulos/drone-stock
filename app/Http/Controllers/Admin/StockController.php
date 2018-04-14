@@ -10,6 +10,7 @@ use App\Stock_Translate;
 use App\Traits\TIndexImage;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -26,8 +27,21 @@ class StockController extends Controller
 			$searchtext = $request->get('searchtext', '');
 		
 			if ($searchtext != '') {
-				$list = Stock::where('id', 'like', '%' . $searchtext . '%')
+				$list = Stock::with('translates')->whereHas('translates', function ($query) use ($searchtext) {
+						$query->where('meta_title', 'like', '%' . $searchtext . '%')
+							->orWhere('meta_description', 'like', '%' . $searchtext . '%')
+							->orWhere('meta_keywords', 'like', '%' . $searchtext . '%');
+					})
+					->with('uploader')->orWhereHas('uploader', function ($query) use ($searchtext) {
+						$query->where('name', 'like', '%' . $searchtext . '%');
+					})
+					->with('category')->orWhereHas('category', function ($query) use ($searchtext) {
+						$query->where('name', 'like', '%' . $searchtext . '%');
+					})
+					->orWhere('id', 'like', '%' . $searchtext . '%')
 					->orWhere('name', 'like', '%' . $searchtext . '%')
+					->orWhere('created_at', 'like', '%' . str_replace('.', '-', $searchtext) . '%')
+					->orWhere('updated_at', 'like', '%' . str_replace('.', '-', $searchtext) . '%')
 					->orderby($sort, $direction)
 					->paginate($length);
 			}
@@ -57,17 +71,20 @@ class StockController extends Controller
 		];
 		
 		$model = Stock::findOrNew($id);
+		if (empty($model->uploader_user_id)) $model->uploader_user_id = Auth::user()->id;
 		
 		if ($request->isMethod('post')) {
 			// validator settings
 			$niceNames = [
 				'name' => trans('admin.Általános adatok') . '/' . trans('admin.Név'),
+				'category_id' => trans('admin.Kategória'),
 				'clip_length' => trans('admin.Általános adatok') . '/' . trans('admin.Klip hossza'),
 				'aspect_ratio' => trans('admin.Általános adatok') . '/' . trans('admin.Képarány'),
 				'indexImage' => trans('admin.Indexkép'),
 			];
 			$rules = [
 				'name' => 'required',
+				'category_id' => 'required|exists:categories,id',
 				'clip_length' => 'required',
 				'aspect_ratio' => 'required',
 				'indexImage' => 'image|mimes:jpeg,png,jpg,gif,svg',
@@ -84,10 +101,12 @@ class StockController extends Controller
 				$rules['stock_size.type'] = 'required';
 				$rules['stock_size.size'] = 'required';
 				$rules['stock_size.fps'] = 'required';
+				$rules['stock_size.price'] = 'required|numeric';
 				$niceNames['stock_size.name'] = trans('admin.Video file-ok') . '/' . trans('admin.Név');
 				$niceNames['stock_size.type'] = trans('admin.Video file-ok') . '/' . trans('admin.Típus');
 				$niceNames['stock_size.size'] = trans('admin.Video file-ok') . '/' . trans('admin.Méret');
 				$niceNames['stock_size.fps'] = trans('admin.Video file-ok') . '/' . trans('admin.Fps');
+				$niceNames['stock_size.price'] = trans('admin.Video file-ok') . '/' . trans('admin.Ár');
 			}
 			
 			// validate
@@ -112,8 +131,9 @@ class StockController extends Controller
 					$translate->language_code = $lang;
 				}
 				$translate->fill($t);
-				if ($translate->slug == '') $translate->slug = Str::slug($translate->meta_title, '-');
-				if ($translate->meta_description == '') $translate->meta_description = Str::limit(strip_tags($translate->meta_lead) != '' ? strip_tags($translate->meta_lead) : strip_tags($translate->meta_body), 250, '...');
+				if (empty($translate->slug)) $translate->slug = Str::slug($t['meta_title'], '-');
+				if (empty($translate->meta_description)) $translate->meta_description = Str::limit(strip_tags($t['lead']) != '' ? strip_tags($t['lead']) : strip_tags($t['body']), 250, '...');
+				
 				$translate->save();
 			}
 			
@@ -153,7 +173,7 @@ class StockController extends Controller
 				$model->save();
 			}
 			
-			return redirect(route('admin_stock_edit', ['id' => $model->id]))->withInput()->with('form_success_message', [
+			return redirect(route('admin_stock_edit', ['id' => $model->id]))->with('form_success_message', [
 				trans('Sikeres mentés'),
 				trans('A v-stock adatai sikeresen rögzítve lettek.'),
 			]);
@@ -202,7 +222,7 @@ class StockController extends Controller
 		
 		// create new resized files and directories
 		foreach (Stock::whereNotNull('index_image')->get() as $model) {
-			$this->resizeIndexImage($model, lqOption('stock_image_original_path', 'uploads/stocks/original'), lqOption('stock_image_path', 'uploads/stocks'), explode(',', lqOption('stock_image_sizes', '80*80,250*250,500*500')), $model->index_image);
+			$this->resizeIndexImage($model, lqOption('stock_image_original_path', 'uploads/stocks/original'), lqOption('stock_image_path', 'uploads/stocks'), explode(',', lqOption('stock_image_sizes', '80*80,250*250,500*500')), $model->index_image, lqOption('stock_image_aspect_ratio', 0));
 		}
 		
 		return redirect(route('admin_stock_list'));

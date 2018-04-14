@@ -34,7 +34,7 @@
 
     <div class="form-group col-md-3">
         <label>{{trans('admin.Aktív')}}</label>
-        <select class="form-control select2" name="translate[{{$lang}}][active]">
+        <select class="form-control select2" name="active">
             <option value="1" @if(old('active', $model->active) == 1) selected="selected" @endif>{{trans('admin.Igen')}}</option>
             <option value="0" @if(old('active', $model->active) == 0) selected="selected" @endif>{{trans('admin.Nem')}}</option>
         </select>

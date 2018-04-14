@@ -13,6 +13,10 @@ class Content extends Model
 	protected $table = 'contents';
 	protected $fillable = ['name', 'category_id'];
 	
+	public function uploader () {
+		return $this->hasOne('App\User', 'id', 'uploader_user_id');
+	}
+	
 	public function translates () {
 		return $this->hasMany('App\Content_Translate');
 	}

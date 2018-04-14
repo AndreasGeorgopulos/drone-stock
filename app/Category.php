@@ -12,6 +12,10 @@ class Category extends Model
 	
 	protected $table = 'categories';
 	protected $fillable = ['name', 'active'];
+	
+	public function uploader () {
+		return $this->hasOne('App\User', 'id', 'uploader_user_id');
+	}
  
 	public function translates () {
 		return $this->hasMany('App\Category_Translate');

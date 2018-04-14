@@ -15,6 +15,7 @@ class CreateStocksTable extends Migration
     {
         Schema::create('stocks', function (Blueprint $table) {
 			$table->increments('id')->comment('Azonosító');
+			$table->interger('uploader_user_id')->comment('Feltöltő felhasználó azonosító');
             $table->string('name')->comment('V-Stock neve');
             $table->string('clip_length', 10)->comment('Hossz');
 			$table->string('aspect_ratio', 10)->comment('Képarány');
@@ -49,6 +50,7 @@ class CreateStocksTable extends Migration
 			$table->string('type', 10)->comment('Típus');
 			$table->string('file_name', 255)->nullable()->comment('Filenév');
 			$table->integer('file_size')->nullable()->comment('File méret');
+			$table->double('price', 10.2)->comment('Ár');
 			$table->tinyInteger('active')->default(1)->comment('Aktív');
 			$table->timestamps();
 			$table->softDeletes();

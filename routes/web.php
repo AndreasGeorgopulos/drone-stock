@@ -65,10 +65,13 @@ $drone_stock = function() use ($admin) {
 	Route::group(['namespace' => 'Domains\DroneStock', 'middleware' => ['locale']], function() {
 		Route::get('/', 'IndexController@index');
 		
+		Route::get('/kereses/{searchtext}', 'IndexController@search');
+		Route::get('/search/{searchtext}', 'IndexController@search');
+		
 		Route::get('/change_language/{lang}', 'IndexController@changeLanguage');
 		
-		Route::get('/v-stock/{category_slug}', 'StockController@category');
-		Route::get('/v-stock/{category_slug}/{stock_slug}', 'StockController@stock');
+		Route::get('/video/{category_slug}', 'StockController@category');
+		Route::get('/video/{category_slug}/{stock_slug}', 'StockController@stock');
 	});
 };
 

@@ -45,6 +45,11 @@
                 <label>{{trans('admin.Fps')}}*</label>
                 <input type="text" class="form-control input-sm" name="stock_size[fps]" value="{{old('stock_size.fps', '')}}" />
             </div>
+
+            <div class="form-group col-md-6">
+                <label>{{trans('admin.Ár')}}*</label>
+                <input type="text" class="form-control input-sm" name="stock_size[price]" value="{{old('stock_size.price', '')}}" />
+            </div>
             <div class="clearfix"></div>
 
             <div class="form-group col-md-12 text-right">
@@ -54,7 +59,7 @@
 
         <div class="col-md-8">
             <h3 class="text-center">{{trans('admin.Feltöltött file-ok')}}</h3>
-            <div style="overflow: auto; height: 300px;">
+            <div style="overflow: auto; height: 380px;">
                 <table class="table table-striped">
                     <thead>
                     <tr>
@@ -92,6 +97,7 @@
                     <th>{{trans('admin.Fps')}}</th>
                     <th>{{trans('admin.Filenév')}}</th>
                     <th>{{trans('admin.Fileméret')}}</th>
+                    <th>{{trans('admin.Ár')}}</th>
                 </tr>
             </thead>
             <tbody>
@@ -104,6 +110,7 @@
                     <td>{{$size->fps}}</td>
                     <td>{{$size->file_name}}</td>
                     <td>{{fileFormatedSize($size->file_size)}}</td>
+                    <td>{{$size->price}}</td>
                 </tr>
             @endforeach
             </tbody>

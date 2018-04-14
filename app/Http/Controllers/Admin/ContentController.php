@@ -9,6 +9,7 @@ use App\LqOption;
 use App\Traits\TIndexImage;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -25,8 +26,18 @@ class ContentController extends Controller
 			$searchtext = $request->get('searchtext', '');
 			
 			if ($searchtext != '') {
-				$list = Content::where('id', 'like', '%' . $searchtext . '%')
-					->orWhere('title', 'like', '%' . $searchtext . '%')
+				$list = Content::with('translates')->whereHas('translates', function ($query) use ($searchtext) {
+						$query->where('meta_title', 'like', '%' . $searchtext . '%')
+							->orWhere('meta_description', 'like', '%' . $searchtext . '%')
+							->orWhere('meta_keywords', 'like', '%' . $searchtext . '%');
+					})
+					->with('uploader')->orWhereHas('uploader', function ($query) use ($searchtext) {
+						$query->where('name', 'like', '%' . $searchtext . '%');
+					})
+					->orWhere('id', 'like', '%' . $searchtext . '%')
+					->orWhere('name', 'like', '%' . $searchtext . '%')
+					->orWhere('created_at', 'like', '%' . str_replace('.', '-', $searchtext) . '%')
+					->orWhere('updated_at', 'like', '%' . str_replace('.', '-', $searchtext) . '%')
 					->orderby($sort, $direction)
 					->paginate($length);
 			}
@@ -56,6 +67,7 @@ class ContentController extends Controller
 		];
 		
 		$model = Content::findOrNew($id);
+		if (empty($model->uploader_user_id)) $model->uploader_user_id = Auth::user()->id;
 		
 		if ($request->isMethod('post')) {
 			// validator settings
@@ -90,7 +102,7 @@ class ContentController extends Controller
 				}
 				$translate->fill($t);
 				if ($translate->slug == '') $translate->slug = Str::slug($translate->meta_title, '-');
-				if ($translate->meta_description == '') $translate->meta_description = Str::limit(strip_tags($translate->meta_lead) != '' ? strip_tags($translate->meta_lead) : strip_tags($translate->meta_body), 250, '...');
+				if ($translate->meta_description == '') $translate->meta_description = Str::limit(strip_tags($translate->lead) != '' ? strip_tags($translate->lead) : strip_tags($translate->body), 250, '...');
 				$translate->save();
 			}
 			
@@ -143,9 +155,12 @@ class ContentController extends Controller
 		
 		// create new resized files and directories
 		foreach (content::whereNotNull('index_image')->get() as $model) {
-			$this->resizeIndexImage($model, lqOption('content_image_original_path', 'uploads/contents/original'), lqOption('content_image_path', 'uploads/contents'), explode(',', lqOption('content_image_sizes', '80*80,250*250,500*500')), $model->index_image);
+			$this->resizeIndexImage($model, lqOption('content_image_original_path', 'uploads/contents/original'), lqOption('content_image_path', 'uploads/contents'), explode(',', lqOption('content_image_sizes', '80*80,250*250,500*500')), $model->index_image, lqOption('content_image_aspect_ratio', 0));
 		}
 		
-		return redirect(route('admin_contents_list'));
+		return redirect(route('admin_contents_list'))->with('form_success_message', [
+			trans('Sikeres átméretezés'),
+			trans('A tartalmak indexképei sikeresen át lettek méretezve a következőkre: ' . lqOption('content_image_sizes', '80*80,250*250,500*500')),
+		]);
 	}
 }

@@ -13,6 +13,9 @@ class Stock extends Model
 	protected $table = 'stocks';
     protected $fillable = ['name', 'clip_length', 'aspect_ratio', 'active', 'category_id'];
 	
+	public function uploader () {
+		return $this->hasOne('App\User', 'id', 'uploader_user_id');
+	}
 	
 	public function sizes () {
 		return $this->hasMany('App\Stock_Size');

@@ -1,5 +1,5 @@
 <div class="tab-pane" id="user_data">
-    <p>{{trans('admin.Válassza ki ctrl+bal egérgomb segítségével azokat a felhasználókat, akik ehhez a jogosultsághoz tartoznak.')}}</p>
+    <p>{{trans('admin.Válassza ki azokat a felhasználókat, akik ehhez a jogosultsághoz tartoznak.')}}</p>
     <div class="form-group" style="height: 200px; overflow: auto;">
         @foreach ($users as $u)
             <div class="checkbox">
