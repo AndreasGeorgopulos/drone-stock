@@ -14,9 +14,10 @@ class OptionController extends Controller
 			$length = $request->get('length', config('adminlte.paginator.default_length'));
 			$sort = $request->get('sort', 'id');
 			$direction = $request->get('direction', 'asc');
-			$searchtext = $request->get('searchtext', '');
+			$searchtext = $request->get('searchtext', $request->session()->get('searchtext', ''));
 			
 			if ($searchtext != '') {
+				$request->session()->put('searchtext', $searchtext);
 				$list = LqOption::where('id', 'like', '%' . $searchtext . '%')
 					->orWhere('lq_key', 'like', '%' . $searchtext . '%')
 					->orWhere('lq_value', 'like', '%' . $searchtext . '%')
@@ -25,6 +26,7 @@ class OptionController extends Controller
 					->paginate($length);
 			}
 			else {
+				$request->session()->remove('searchtext');
 				$list = LqOption::orderby($sort, $direction)->paginate($length);
 			}
 			

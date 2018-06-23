@@ -6,10 +6,10 @@
                 <table class="table table-bordered table-striped dataTable">
                     <thead>
                     <tr role="row">
-                        <th class="@if($sort == 'id') sorting_{{$direction}} @else sorting @endif" data-column="id">#</th>
-                        <th class="@if($sort == 'key') sorting_{{$direction}} @else sorting @endif" data-column="key">{{trans('admin.Kulcs')}}</th>
-                        <th data-column="name">{{trans('admin.Érték')}}</th>
-                        <th data-column="description">{{trans('admin.Megjegyzés')}}</th>
+                        <th class="hidden-xs @if($sort == 'id') sorting_{{$direction}} @else sorting @endif" data-column="id">#</th>
+                        <th class="hidden-xs @if($sort == 'key') sorting_{{$direction}} @else sorting @endif" data-column="key">{{trans('admin.Kulcs')}}</th>
+                        <th class="hidden-xs" data-column="name">{{trans('admin.Érték')}}</th>
+                        <th class="hidden-xs" data-column="description">{{trans('admin.Megjegyzés')}}</th>
                         <th>
                             <a href="{{url(route('admin_options_edit'))}}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-plus"></i> {{trans('admin.Új opció')}}</a>
                         </th>
@@ -18,13 +18,14 @@
                     <tbody>
                     @foreach ($list as $model)
                         <tr role="row" class="odd">
-                            <td>{{$model->id}}</td>
-                            <td>{{$model->lq_key}}</td>
-                            <td>{!! nl2br($model->lq_value) !!}</td>
-                            <td>{{$model->notice}}</td>
+                            <td class="hidden-xs">{{$model->id}}</td>
+                            <td class="hidden-xs">{{$model->lq_key}}</td>
+                            <td class="hidden-xs">{!! nl2br($model->lq_value) !!}</td>
+                            <td class="hidden-xs">{{$model->notice}}</td>
                             <td>
                                 <div class="btn-group pull-right">
-                                    <button type="button" class="btn btn-primary btn-sm">{{trans('admin.Műveletek')}}</button>
+                                    <button type="button" class="btn btn-primary btn-sm hidden-xs">{{trans('admin.Műveletek')}}</button>
+                                    <button type="button" class="btn btn-primary btn-sm visible-xs input-block-level">{{$model->lq_key}}</button>
                                     <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                         <span class="caret"></span>
                                         <span class="sr-only">Toggle Dropdown</span>
